@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>🎉 Thank You!</title>
+  <style>
+    :root {
+      --bg1: #845ec2;
+      --bg2: #d65db1;
+      --bg3: #ff6f91;
+      --bg4: #ff9671;
+      --text: #ffffff;
+      --card-bg: rgba(255,255,255,0.10);
+      --card-border: rgba(255,255,255,0.25);
+      --shadow: 0 20px 60px rgba(0,0,0,0.35);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(120deg, var(--bg1), var(--bg2), var(--bg3), var(--bg4));
+      background-size: 300% 300%;
+      animation: gradientShift 18s ease-in-out infinite;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+      overflow: hidden;
+    }
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    #confetti { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
+
+    .card {
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+      width: min(92vw, 900px);
+      padding: clamp(22px, 5vw, 56px);
+      border-radius: 28px;
+      background: radial-gradient(120% 120% at 10% 10%, rgba(255,255,255,0.22), rgba(255,255,255,0.08)), var(--card-bg);
+      border: 1px solid var(--card-border);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px) saturate(130%);
+      -webkit-backdrop-filter: blur(10px) saturate(130%);
+      text-align: center;
+    }
+
+    .headline {
+      margin: 0 0 10px;
+      font-size: clamp(30px, 6vw, 64px);
+      line-height: 1.08;
+      letter-spacing: 0.2px;
+      text-shadow: 0 0 14px rgba(255,255,255,0.75), 0 0 30px rgba(255,255,255,0.28);
+      opacity: 0;
+      transform: translateY(12px) scale(0.98);
+      animation: fadeUp 900ms ease forwards 250ms;
+    }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0) scale(1); } }
+
+    .funny {
+      margin: 6px 0 12px;
+      font-size: clamp(18px, 3.2vw, 30px);
+      color: #fff;
+      white-space: pre-wrap;
+      min-height: 3em;
+    }
+
+    .chips { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 14px; }
+    .chip { padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,0.25); font-size: 14px; backdrop-filter: blur(6px); }
+
+    footer {
+      margin-top: 24px;
+      font-size: 24px;
+      font-weight: 700;
+      text-align: center;
+      color: #ffffff;
+      text-shadow: 0 0 6px rgba(255,255,255,0.8), 0 0 12px rgba(255,255,255,0.5);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="confetti"></canvas>
+
+  <main class="card" role="main" aria-live="polite">
+    <h1 class="headline" id="headline">🎉 Thank You!</h1>
+    <p class="funny" id="funny"></p>
+
+    <div class="chips" aria-hidden="true">
+      <div class="chip">Oops… you made me smile 😏</div>
+      <div class="chip">Mood: 😄 thanks to you!</div>
+      <div class="chip">Certified awesome friend ✅</div>
+      <div class="chip">Top-secret VIP list 🤫</div>
+    </div>
+
+    <footer>— With love, Madhusudan</footer>
+  </main>
+
+  <script>
+    // ===== Personalization via ?name=YourFriend =====
+    function getFriendName() {
+      const params = new URLSearchParams(window.location.search);
+      const raw = params.get('name') || params.get('n') || params.get('to');
+      if (!raw) return 'Friend';
+      try { return decodeURIComponent(raw).trim() || 'Friend'; }
+      catch { return raw.trim() || 'Friend'; }
+    }
+    function escapeHtml(s){return s.replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\'':'&#39;','"':'&quot;'}[c]));}
+
+    const friend = escapeHtml(getFriendName());
+    const headline = document.getElementById('headline');
+    headline.innerHTML = `🎉 Thank You, <span style="text-decoration: underline wavy rgba(255,255,255,0.7); text-underline-offset: 6px;">${friend}</span>!`;
+
+    // ===== Typewriter effect for funny line =====
+    const funny = document.getElementById('funny');
+    const message = "Got your wish… now just send a small cheque so I can buy something special! 💸😉 😉 ";
+    let index = 0;
+    function typeWriter() {
+      if(index < message.length){
+        funny.innerHTML += message.charAt(index);
+        index++;
+        setTimeout(typeWriter, 70); // typing speed (ms)
+      }
+    }
+    typeWriter();
+
+    // ===== Confetti =====
+    const canvas = document.getElementById('confetti');
+    const ctx = canvas.getContext('2d');
+    let w, h, particles = [];
+    const colors = ['#ffffff','#ffe08a','#ffd1dc','#b5f7ff','#caffbf','#ffadad','#ffd6a5','#fdffb6','#caffbf','#9bf6ff','#a0c4ff','#bdb2ff'];
+    function resize(){ w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resize); resize();
+    function spawnParticle(x,y,burst=false){
+      const size = Math.random()*8 + 6;
+      const angle = Math.random()*Math.PI*2;
+      const speed = burst ? Math.random()*6+2 : Math.random()*2+0.4;
+      const shape = Math.random()<0.5?'rect':'tri';
+      particles.push({x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed-(burst?2:0),g:0.05+Math.random()*0.12,r:Math.random()*Math.PI,vr:(Math.random()-0.5)*0.2,size,color:colors[(Math.random()*colors.length)|0],shape,life:0,maxLife:burst?220:600});
+    }
+    function burst(){ const cx=w/2, cy=h/3; for(let i=0;i<220;i++) spawnParticle(cx,cy,true); }
+    function drizzle(){ for(let i=0;i<4;i++) spawnParticle(Math.random()*w,-10,false); }
+    function draw(p){
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.r); ctx.fillStyle=p.color;
+      if(p.shape==='rect'){ ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size*0.7); }
+      else { ctx.beginPath(); ctx.moveTo(0,-p.size/2); ctx.lineTo(p.size/2,p.size/2); ctx.lineTo(-p.size/2,p.size/2); ctx.closePath(); ctx.fill(); }
+      ctx.restore();
+    }
+    function step(){
+      ctx.clearRect(0,0,w,h); drizzle();
+      for(let i=particles.length-1;i>=0;i--){
+        const p=particles[i]; p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.r+=p.vr; p.life++;
+        if(p.y>h+40||p.x<-40||p.x>w+40||p.life>p.maxLife){ particles.splice(i,1); continue; }
+        draw(p);
+      }
+      requestAnimationFrame(step);
+    }
+    setTimeout(burst, 380); step();
+
+    // ===== Background music always enabled =====
+    let audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    const gain = audioCtx.createGain();
+    gain.gain.value = 0.12;
+    gain.connect(audioCtx.destination);
+    const arp=[60,64,67,72,67,64];
+    let i=0;
+    setInterval(()=>{
+      const osc=audioCtx.createOscillator();
+      const g=audioCtx.createGain();
+      osc.type='sine';
+      osc.frequency.value = 440 * Math.pow(2,(arp[i%arp.length]-69)/12);
+      g.gain.value=0;
+      osc.connect(g).connect(gain);
+      const now = audioCtx.currentTime;
+      g.gain.linearRampToValueAtTime(0.0001, now);
+      g.gain.linearRampToValueAtTime(0.22, now+0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, now+0.36);
+      osc.start(now);
+      osc.stop(now+0.41);
+      i++;
+    },420);
+  </script>
+</body>
+</html>
